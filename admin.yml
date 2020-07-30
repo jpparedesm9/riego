@@ -1,0 +1,184 @@
+reportes_turnos_riego:
+    path: /reportes/turnos_riego/
+    defaults: { _controller: "AdminBundle:Users:turnosRiego"}
+    methods:  [GET]  
+
+reportes_morosos:
+    path: /reportes/morosos/{anio}/{mes}
+    defaults: { _controller: "AdminBundle:Users:morosos", anio:0, mes:0}
+    methods:  [GET]  
+
+reportes_socios_al_dia:
+    path: /reportes/socios_al_dia/{anio}/{mes}
+    defaults: { _controller: "AdminBundle:Users:sociosAlDia", anio:0, mes:0}
+    methods:  [GET]
+
+reportes_recaudacion:
+    path: /reportes/recaudacion/{anio}/{mes}
+    defaults: { _controller: "AdminBundle:Users:recaudacion", anio:0, mes:0}
+    methods:  [GET]
+
+reportes_deudas_por_usuario:
+    path: /reportes/deudas_por_usuario/{anio}/{mes}
+    defaults: { _controller: "AdminBundle:Users:deudasPorUsuario", anio:0, mes:0}
+    methods:  [GET]
+    
+reportes_deudas_por_usuario_individual:
+    path: /reportes/deudas_por_usuario_individual/{usuario}
+    defaults: { _controller: "AdminBundle:Users:deudasPorUsuarioIndividual", usuario:0}
+    methods:  [GET]
+
+reportes_asistencia_reunion:
+    path: /reportes/asistencia_reunion/{anio}/{mes}
+    defaults: { _controller: "AdminBundle:Users:asistenciaReunion", anio:0, mes:0}
+    methods:  [GET]
+
+reportes_asistencia_minga:
+    path: /reportes/asistencia_minga/{anio}/{mes}
+    defaults: { _controller: "AdminBundle:Users:asistenciaMinga", anio:0, mes:0}
+    methods:  [GET]
+
+extraer_pdf:
+    path: /extraer_pdf_desde_disco/{id}
+    defaults: { _controller: "AdminBundle:Users:extraerPdfDesdeDisco" }
+    methods:  [GET]  
+
+registrar_cobro_multa:
+    path: /registrar_cobro_multa
+    defaults: { _controller: "AdminBundle:Users:registrarCobroMulta" }
+    methods:  [POST]  
+
+registrar_multa:
+    path: /registrar_multa
+    defaults: { _controller: "AdminBundle:Users:registroMulta" }
+    methods:  [POST]    
+    
+eliminar_multa:
+    path: /eliminar_multa
+    defaults: { _controller: "AdminBundle:Users:eliminarMulta" }
+    methods:  [POST] 
+
+multas:
+    path: /multas
+    defaults: { _controller: "AdminBundle:Users:multas" }
+    methods:  [GET] 
+    
+registrar_pago:
+    path: /registrar_pago
+    defaults: { _controller: "AdminBundle:Users:registrarPago" }
+    methods:  [POST]   
+
+reuniones_principal:
+    path: /reuniones_principal
+    defaults: { _controller: "AdminBundle:Users:reunionesPrincipal" }
+    methods:  [GET] 
+
+nuevo_registro_de_reunion:
+    path: /registrar_reunion
+    defaults: { _controller: "AdminBundle:Users:registrarReunion" }
+    methods:  [POST] 
+
+edicion_asistencia:
+    path: /edicion_asistencia/{id}
+    defaults: { _controller: "AdminBundle:Users:edicionAsistencia", id:0 }
+    methods:  [GET] 
+
+edicion_asistentes:
+    path: /edicion_asistentes
+    defaults: { _controller: "AdminBundle:Users:edicionAsistentes"}
+    methods:  [POST] 
+
+admin_cobros:
+    path: /cobros
+    defaults: { _controller: "AdminBundle:Users:cobros" }
+    methods:  [GET]
+
+obtener_multas_pendientes:
+    path: /obtener_multas_pendientes
+    defaults: { _controller: "AdminBundle:Users:obtenerMultas" }
+    methods:  [POST]
+
+admin_area_update:
+    path: /admin_area_udpate
+    defaults: { _controller: "AdminBundle:Area:areaUpdate" }
+    methods:  [POST]
+
+admin_area_selected:
+    path: /admin_area_selected
+    defaults: { _controller: "AdminBundle:Area:areaSelected" }
+    methods:  [POST]
+
+admin_delete_area:
+    path: /admin_delete_area
+    defaults: { _controller: "AdminBundle:Area:deleteArea" }
+    methods:  [POST]
+
+admin_insert_area:
+    path: /admin_insert_area
+    defaults: { _controller: "AdminBundle:Area:insertArea" }
+    methods:  [POST]
+
+admin_rename_area:
+    path: /admin_rename_area
+    defaults: { _controller: "AdminBundle:Area:renameArea" }
+    methods:  [POST]
+
+admin_update_user_image:
+    path: /admin_update_user_image
+    defaults: { _controller: "AdminBundle:Users:updateUserImage" }
+    methods:  [POST|GET]
+
+admin_edit_areas:
+    path: /admin_edit_areas
+    defaults: { _controller: "AdminBundle:Area:areas" }
+    methods:  [GET]
+
+admin_edit_users:
+    path: /admin_edit_users
+    defaults: { _controller: "AdminBundle:Users:showUsers" }
+    methods:  [POST|GET]
+
+admin_get_users_list:
+    path: /get_users_list
+    defaults: { _controller: "AdminBundle:Users:getUserList" }
+    methods:  [POST|GET]
+
+admin_user_insert_update:
+    path: /insert_or_update_user/{userid}
+    defaults: { _controller: "AdminBundle:Users:userUpdateorInsert" , userid:0}
+    methods:  [POST|GET]
+
+admin_remove_user:
+    path: /admin_remove_user/
+    defaults: { _controller: "AdminBundle:Users:removeUser"}
+    methods:  [POST]
+
+admin_user_update_role:
+    path: /admin_user_update_role
+    defaults: { _controller: "AdminBundle:Users:updateRole"}
+    methods:  [POST|GET]
+
+admin_update_async_user:
+    path: /admin_update_async_user
+    defaults: { _controller: "AdminBundle:Users:updateAsyncUser" }
+    methods:  [POST|GET]
+
+admin_user_event:
+    path: /admin_user_event
+    defaults: { _controller: "AdminBundle:Users:userEvent" }
+    methods:  [POST]
+
+admin_configure_site:
+    path: /admin_configure_site
+    defaults: { _controller: "AdminBundle:SiteConfiguration:configureSite" }
+    methods:  [POST|GET]
+
+admin_change_color:
+    path: /admin_change_color
+    defaults: { _controller: "AdminBundle:SiteConfiguration:changeColor" }
+    methods:  [POST|GET]
+
+admin_update_logo_site:
+    path: /update_logo_site
+    defaults: { _controller: "AdminBundle:SiteConfiguration:updateLogoSite" }
+    methods:  [POST]
