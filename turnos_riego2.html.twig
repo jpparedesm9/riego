@@ -1,0 +1,80 @@
+{% extends "::base.html.twig" %}
+{%block customjs%}
+<script src="{{asset('assets/js/jquery.validate.min.js')}}"></script>
+<script src="{{asset('assets/select2/js/select2.min.js')}}"></script>
+<script type="text/Javascript">
+$(document).ready(function(){
+});
+</script>
+{%endblock%}
+{%block customcss%}
+<link href="{{asset('assets/select2/css/select2-bootstrap.css')}}" />
+<link href="{{asset('assets/select2/css/select2.min.css')}}" rel="stylesheet" />
+{%endblock%}
+{%block body%}
+<div class="container-fluid">
+    <!-- ============================================================== -->
+    <!-- Bread crumb and right sidebar toggle -->
+    <!-- ============================================================== -->
+    <div class="row page-titles">
+        <div class="col-md-5 align-self-center">
+            <h4 class="text-themecolor">Reportes de Turnos de Riego</h4>
+        </div>
+    </div>
+     <div class="row">
+            <div class="col-12">
+                <div class="card">
+                    <div class="card-body">
+                        <div class="table-responsive m-t-40">
+                            <table id="example23" class="display nowrap table table-hover table-striped table-bordered" cellspacing="0" width="100%">
+                                <thead>
+                                    <tr>
+                                        <th>No</th>
+                                        <th>Nombre</th>
+                                        <th>Apellido</th>
+                                        <th>Turno de Riego</th>
+                                    </tr>
+                                </thead>
+                                {%set i=1%}
+                                {%set total=0%}
+                                <tbody>
+                               {%for usuario in usuarios%}
+                                <tr id="row_usuario_{{usuario.id}}">
+                                 <td>{{i}}</td>
+                                 <td>{{usuario.name}}</td>
+                                 <td>{{usuario.lastname}}</td>
+                                 <td>
+                                 {%if usuario.position=="1"%}
+                                  6:00 - 8:00
+                                 {% elseif  usuario.position=="2"%}
+                                  8:00 - 10:00
+                                 {% elseif  usuario.position=="3"%}
+                                  10:00 - 12:00
+                                 {% elseif  usuario.position=="4"%}
+                                  12:00 - 14:00
+                                 {% elseif  usuario.position=="5"%}
+                                  14:00 - 16:00
+                                 {% elseif  usuario.position=="6"%}
+                                  16:00 - 18:00
+                                 {% elseif  usuario.position=="7"%}
+                                  18:00 - 20:00
+                                 {% elseif  usuario.position=="8"%}
+                                  20:00 - 22:00
+                                 {% elseif  usuario.position=="9"%}
+                                  22:00 - 24:00
+                                 {% else %}
+                                  &nbsp;&nbsp;&nbsp;
+                                {% endif %}
+                                 </td>
+                                </tr>
+                                {%endfor%}
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+</div>
+
+{%endblock%}
