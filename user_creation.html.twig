@@ -1,0 +1,434 @@
+{% extends "::base.html.twig" %}
+{%block customcss%}
+<link rel="stylesheet" type="text/css" href="{{ asset('assets/uploader/css/jquery.fileupload.css') }}" />
+<link href="{{asset('assets/node_modules/icheck/skins/all.css')}}" rel="stylesheet">
+<link href="{{asset('dist/css/pages/form-icheck.css')}}" rel="stylesheet">
+<style type="text/css">
+.error {
+    color: red !important;
+}
+</style>
+{%endblock%}
+{%block customjs%}
+<script type="text/javascript" src="{{ asset('assets/uploader/js/vendor/jquery.ui.widget.js') }}"></script>
+<script type="text/javascript" src="{{ asset('assets/uploader/js/jquery.iframe-transport.js') }}"></script>
+<script type="text/javascript" src="{{ asset('assets/uploader/js/jquery.fileupload.js') }}"></script>
+<script src="{{asset('assets/uploader/js/jquery.fileupload-process.js') }}"></script>
+<script src="{{asset('assets/uploader/js/jquery.fileupload-validate.js') }}"></script>
+
+
+<script src="{{asset('assets/node_modules/icheck/icheck.min.js')}}"></script>
+<script src="{{asset('assets/node_modules/icheck/icheck.init.js')}}"></script>
+<script src="{{asset('assets/js/jquery.validate.min.js')}}"></script>
+<script type="text/JavaScript">
+$(document).ready(function()
+{
+
+$('#file-upload').fileupload({
+  autoUpload: true,
+  maxFileSize: 2000000,
+  done: function (e, data)
+  {
+      var file_info=JSON.parse(data.result);
+      var raw_name=file_info["written_file"];
+      $("#user_img").attr('src','{{asset('profiles')}}/'+raw_name);
+      showSuccessToast("Imagen Actualizada");
+  }
+});
+
+
+
+$('#user_frm')[0].reset();
+$.validator.setDefaults({
+      ignore: [],
+      error: function(label) {
+         $(this).addClass("error");
+       }
+  });
+$("#user_frm").validate({
+  rules: {
+    name: {
+    required: true
+    },
+    state: {
+    required: true
+    },
+    lastname: {
+    required: true
+    },
+    nick_name: {
+    required: true
+    },
+    email: {
+    required: true,
+    email: true
+    }
+  },
+  messages: {
+  name: {
+  required: "Campo requerido"
+  },
+  state: {
+  required: "Campo requerido"
+  },
+  lastname: {
+  required: "Campo requerido"
+  },
+  nick_name: {
+  required: "Campo requerido"
+  },
+  email: {
+  required: "Email requerido",
+  email: "Formato incorrecto"
+  }
+  }
+});
+$("#save_roles_btn").click(function(){
+$("#success_roles_msg").hide();
+$("#error_roles_msg").hide();
+$("#process_roles_msg").show();
+var form_data = $('#permisssions_frm').serializeArray();
+form_data.push({name: "user_id", value: $("#user_id").val()});
+    $.ajax({
+        type: "POST",
+        url: "{{path('admin_user_update_role')}}",
+        data: form_data,
+        success: function(data) {
+        $("#process_roles_msg").hide();
+              if (data.event=="success")
+              {
+                  $("#success_roles_msg").html(data.msg);
+                  $("#success_roles_msg").show();
+              }
+              else {
+                  $("#error_roles_msg").html(data.msg);
+                  $("#error_roles_msg").show();
+              }
+              $("#processing_msg").hide();
+        }
+      });
+
+});
+$("#user_update_btn").click(function(){
+var frmvalid = $("#user_frm").valid();
+    if (frmvalid) {
+     var form_data = $('#user_frm').serialize();
+     var selected_roles = [];
+     $(".user_roles:checked").each(function() {
+         selected_roles.push($(this).val());
+     });
+     form_data += '&selected_roles='+JSON.stringify(selected_roles);
+     $.ajax({
+         type: "POST",
+         url: "{{path('admin_user_event')}}",
+         data: form_data,
+         success: function(data) {
+         console.log(data.msg);
+               if (data.event=="success")
+               {
+                   $("#creation_mode").val("0");
+                   $("#user_id").val(data.user_id);
+                   showSuccessToast(data.msg);
+                   if(data.redirect==1){
+                    $(location).attr('href', '{{path('admin_user_insert_update')}}/'+data.user_id);
+                   }
+               }
+               else {
+                   showErrorToast(data.msg);
+               }
+
+         }
+     });
+     }
+});
+
+});
+</script>
+{%endblock%}
+{%block body%}
+<!-- ============================================================== -->
+<!-- Container fluid  -->
+<!-- ============================================================== -->
+<div class="container-fluid">
+    <!-- ============================================================== -->
+    <!-- Bread crumb and right sidebar toggle -->
+    <!-- ============================================================== -->
+    <div class="row page-titles">
+        <div class="col-md-5 align-self-center">
+            <h4 class="text-themecolor">{%if creation_mode==1%}Creaci&oacute;n de Usuario{%else%}Edici&oacute;n de Usuario{%endif%}</h4>
+        </div>
+        <div class="col-md-7 align-self-center text-right">
+            <div class="d-flex justify-content-end align-items-center">
+                <ol class="breadcrumb">
+                    <li class="breadcrumb-item"><a href="javascript:void(0)">Administraci&oacute;n</a></li>
+                    <li class="breadcrumb-item active"><a href="{{path('admin_edit_users')}}">Usuarios</a></li>
+                </ol>
+            </div>
+        </div>
+    </div>
+    <!-- ============================================================== -->
+    <!-- End Bread crumb and right sidebar toggle -->
+    <!-- ============================================================== -->
+    <!-- ============================================================== -->
+    <!-- Start Page Content -->
+    <!-- ============================================================== -->
+    <!-- Row -->
+    <div class="row">
+        <!-- Column -->
+        <div class="col-lg-4 col-xlg-3 col-md-5">
+            <div class="card">
+            <img class="card-img" src="{{asset('assets/images/background/socialbg.jpg')}}" height="456" alt="Card image">
+                <div class="card-img-overlay card-inverse text-white social-profile d-flex justify-content-center">
+                    <div class="align-self-center">
+                    {% set path=null %}
+                    {%if user is not null%}
+                    {% set path=user.image %}
+                    {%endif%}
+                    <img id="user_img" src="{% if path is not empty %}
+                    {{asset('profiles/'~path)}}
+                    {%else%}
+                    {{asset('default_images/default_user.png')}}
+                    {%endif%}" class="img-circle" width="100">
+                        <h4 class="card-title"> </h4>
+                        <form method="post" enctype="multipart/form-data">
+                            <span class="btn btn-success fileinput-button">
+                                <i class="glyphicon glyphicon-plus"></i>
+                                <span>&nbsp;Cambiar Imagen</span>
+                                <input id="file-upload" type="file" name="files[]" data-url="{{ oneup_uploader_endpoint('profile_update') }}" />
+                            </span>
+                        </form>
+
+
+
+
+                    </div>
+                </div>
+            </div>
+        </div>
+        <!-- Column -->
+        <!-- Column -->
+        <div class="col-lg-8 col-xlg-9 col-md-7">
+            <div class="card">
+                <!-- Nav tabs -->
+                <ul class="nav nav-tabs profile-tab" role="tablist">
+                    <li class="nav-item"> <a class="nav-link active" data-toggle="tab" href="#general_info" role="tab">Informaci&oacute;n general</a> </li>
+                </ul>
+                <!-- Tab panes -->
+                <div class="tab-content">
+
+                    <div class="tab-pane active" id="general_info" role="tabpanel">
+                    <div class="card-body">
+                    <div class="row">
+                        <div class="col-sm-12 col-xs-12">
+                        <form class="form-horizontal" id="user_frm" name="user_frm">
+                            <input type="hidden" name="user_id" id="user_id" value="{%if creation_mode==0%}{{user.id}}{%else%}0{%endif%}"/>
+                            <input type="hidden" name="creation_mode" id="creation_mode" value="{{creation_mode}}"/>
+                            <div class="form-body">
+                                <hr class="m-t-0 m-b-40">
+                                <div class="row">
+                                    <div class="col-md-6">
+                                        <div class="form-group row">
+                                            <label class="control-label text-right col-md-3">Nombres</label>
+                                            <div class="col-md-9">
+                                                <input type="text" id="name" name="name" class="form-control" placeholder="" value="{%if creation_mode==0%}{{user.name}}{%endif%}">
+                                                <small class="form-control-feedback"> &nbsp; </small> </div>
+                                        </div>
+                                    </div>
+                                    <!--/span-->
+                                    <div class="col-md-6">
+                                        <div class="form-group row">
+                                            <label class="control-label text-right col-md-3">Apellidos</label>
+                                            <div class="col-md-9">
+                                                <input type="text" id="lastname" name="lastname" class="form-control" placeholder="" value="{%if creation_mode==0%}{{user.lastname}}{%endif%}">
+                                                <small class="form-control-feedback"> &nbsp; </small> </div>
+                                        </div>
+                                    </div>
+                                    <!--/span-->
+                                </div>
+                                <!--/row-->
+                                <div class="row">
+                                    <div class="col-md-6">
+                                        <div class="form-group row">
+                                            <label class="control-label text-right col-md-3">C&eacute;dula:</label>
+                                            <div class="col-md-9">
+                                                <input type="text" id="nick_name" name="nick_name" class="form-control" placeholder="" value="{%if creation_mode==0%}{{user.username}}{%endif%}">
+                                                <small class="form-control-feedback"> &nbsp;</small>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <!--/span-->
+                                    <div class="col-md-6">
+                                        <div class="form-group row">
+                                            <label class="control-label text-right col-md-3">Email.</label>
+                                            <div class="col-md-9">
+                                                <input type="text" id="email" name="email" class="form-control" placeholder="" value="{%if creation_mode==0%}{{user.email}}{%endif%}">
+                                                <small class="form-control-feedback"> &nbsp;</small>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <!--/span-->
+                                </div>
+                                <div class="row">
+                                    <div class="col-md-6">
+                                        <div class="form-group row">
+                                            <label class="control-label text-right col-md-3">Abrev y t&iacute;tulo:</label>
+                                            <div class="col-md-9">
+                                                <input type="text" id="abreviation" name="abreviation" class="form-control" placeholder="" value="{%if creation_mode==0%}{{user.abreviation}}{%endif%}">
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <!--/span-->
+                                    <div class="col-md-6">
+                                        <div class="form-group row">
+                                            <label class="control-label text-right col-md-3">Turno de Riego</label>
+                                            <div class="col-md-9">
+                                            <select class="form-control" id="position" name="position">
+                                                <option value="" {%if user.position=="0"%}selected{%endif%}>Escoja Turno de Riego</option>
+                                                <option value="1" {%if user.position=="1"%}selected{%endif%}>6:00 - 8:00</option>
+                                                <option value="2" {%if user.position=="2"%}selected{%endif%}>8:00 - 10:00</option>
+                                                <option value="3" {%if user.position=="3"%}selected{%endif%}>10:00 - 12:00</option>
+                                                <option value="4" {%if user.position=="4"%}selected{%endif%}>12:00 - 14:00</option>
+                                                <option value="5" {%if user.position=="5"%}selected{%endif%}>14:00 - 16:00</option>
+                                                <option value="6" {%if user.position=="6"%}selected{%endif%}>16:00 - 18:00</option>
+                                                <option value="7" {%if user.position=="7"%}selected{%endif%}>18:00 - 20:00</option>
+                                                <option value="8" {%if user.position=="8"%}selected{%endif%}>20:00 - 22:00</option>
+                                                <option value="9" {%if user.position=="9"%}selected{%endif%}>22:00 - 24:00</option>
+                                                </select>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <!--/span-->
+                                </div>
+                                <!--/row-->
+                                <!--/row-->
+                                <div class="row">
+                                    <div class="col-md-6">
+                                        <div class="form-group row">
+                                            <label class="control-label text-right col-md-3">G&eacute;nero</label>
+                                            <div class="col-md-9">
+                                                <select id="gender" name="gender" class="form-control custom-select">
+                                                    <option value="1">Masculino</option>
+                                                    <option value="0s">Femenino</option>
+                                                </select>
+                                             </div>
+                                        </div>
+                                    </div>
+                                    <!--/span-->
+                                    <div class="col-md-6">
+                                        <div class="form-group row">
+                                            <label class="control-label text-right col-md-3">Estado</label>
+                                            <div class="col-md-9">
+                                                <div class="custom-control custom-radio">
+                                                    <input type="radio" id="customRadio3" name="state" class="custom-control-input" value="1" {%if creation_mode==0%}{%if user.enabled==1%}checked{%endif%}{%endif%}>
+                                                    <label class="custom-control-label" for="customRadio3">Activo</label>
+                                                </div>
+                                                <div class="custom-control custom-radio">
+                                                    <input type="radio" id="customRadio4" name="state" class="custom-control-input" value="0" {%if creation_mode==0%}{%if user.enabled==0%}checked{%endif%}{%endif%}>
+                                                    <label class="custom-control-label" for="customRadio4">Inactivo</label>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <!--/span-->
+                                </div>
+                            </div>
+                            <hr>
+                            <div class="form-actions">
+                                <div class="row">
+                                    <div class="col-md-6">
+                                        <div class="row">
+                                            <div class="col-md-offset-3 col-md-9">
+                                                <button type="button" id="user_update_btn" name="user_update_btn" class="btn btn-success">Guardar</button>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-6">
+                                    <div id="error_msg" style="color:red; display:none;">
+                                    </div>
+                                    <div id="success_msg" style="display:none;">
+                                    </div>
+                                    <div id="processing_msg" style="display:none;">
+                                    <img src="{{asset('assets/images/loader.gif')}}" /> <small class="pull-right text-success"><i class="fa fa-sort-asc"></i> Procesando ..</small>
+                                    </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </form>
+                        </div>
+                        </div>
+
+                    </div>
+                    </div>
+
+                </div>
+            </div>
+        </div>
+        <!-- Column -->
+
+    </div>
+    <!-- Row -->
+    <!-- ============================================================== -->
+    <!-- End PAge Content -->
+    <!-- ============================================================== -->
+    <!-- ============================================================== -->
+    <!-- Right sidebar -->
+    <!-- ============================================================== -->
+    <!-- .right-sidebar -->
+    <div class="right-sidebar">
+        <div class="slimscrollright">
+            <div class="rpanel-title"> Service Panel <span><i class="ti-close right-side-toggle"></i></span> </div>
+            <div class="r-panel-body">
+                <ul id="themecolors" class="m-t-20">
+                    <li><b>With Light sidebar</b></li>
+                    <li><a href="javascript:void(0)" data-skin="skin-default" class="default-theme">1</a></li>
+                    <li><a href="javascript:void(0)" data-skin="skin-green" class="green-theme">2</a></li>
+                    <li><a href="javascript:void(0)" data-skin="skin-red" class="red-theme">3</a></li>
+                    <li><a href="javascript:void(0)" data-skin="skin-blue" class="blue-theme working">4</a></li>
+                    <li><a href="javascript:void(0)" data-skin="skin-purple" class="purple-theme">5</a></li>
+                    <li><a href="javascript:void(0)" data-skin="skin-megna" class="megna-theme">6</a></li>
+                    <li class="d-block m-t-30"><b>With Dark sidebar</b></li>
+                    <li><a href="javascript:void(0)" data-skin="skin-default-dark" class="default-dark-theme ">7</a></li>
+                    <li><a href="javascript:void(0)" data-skin="skin-green-dark" class="green-dark-theme">8</a></li>
+                    <li><a href="javascript:void(0)" data-skin="skin-red-dark" class="red-dark-theme">9</a></li>
+                    <li><a href="javascript:void(0)" data-skin="skin-blue-dark" class="blue-dark-theme">10</a></li>
+                    <li><a href="javascript:void(0)" data-skin="skin-purple-dark" class="purple-dark-theme">11</a></li>
+                    <li><a href="javascript:void(0)" data-skin="skin-megna-dark" class="megna-dark-theme ">12</a></li>
+                </ul>
+                <ul class="m-t-20 chatonline">
+                    <li><b>Chat option</b></li>
+                    <li>
+                        <a href="javascript:void(0)"><img src="../assets/images/users/1.jpg" alt="user-img" class="img-circle"> <span>Varun Dhavan <small class="text-success">online</small></span></a>
+                    </li>
+                    <li>
+                        <a href="javascript:void(0)"><img src="../assets/images/users/2.jpg" alt="user-img" class="img-circle"> <span>Genelia Deshmukh <small class="text-warning">Away</small></span></a>
+                    </li>
+                    <li>
+                        <a href="javascript:void(0)"><img src="../assets/images/users/3.jpg" alt="user-img" class="img-circle"> <span>Ritesh Deshmukh <small class="text-danger">Busy</small></span></a>
+                    </li>
+                    <li>
+                        <a href="javascript:void(0)"><img src="../assets/images/users/4.jpg" alt="user-img" class="img-circle"> <span>Arijit Sinh <small class="text-muted">Offline</small></span></a>
+                    </li>
+                    <li>
+                        <a href="javascript:void(0)"><img src="../assets/images/users/5.jpg" alt="user-img" class="img-circle"> <span>Govinda Star <small class="text-success">online</small></span></a>
+                    </li>
+                    <li>
+                        <a href="javascript:void(0)"><img src="../assets/images/users/6.jpg" alt="user-img" class="img-circle"> <span>John Abraham<small class="text-success">online</small></span></a>
+                    </li>
+                    <li>
+                        <a href="javascript:void(0)"><img src="../assets/images/users/7.jpg" alt="user-img" class="img-circle"> <span>Hritik Roshan<small class="text-success">online</small></span></a>
+                    </li>
+                    <li>
+                        <a href="javascript:void(0)"><img src="../assets/images/users/8.jpg" alt="user-img" class="img-circle"> <span>Pwandeep rajan <small class="text-success">online</small></span></a>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </div>
+    <!-- ============================================================== -->
+    <!-- End Right sidebar -->
+    <!-- ============================================================== -->
+</div>
+<!-- ============================================================== -->
+<!-- End Container fluid  -->
+<!-- ============================================================== -->
+{%endblock%}
