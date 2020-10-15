@@ -1,0 +1,27 @@
+import React, {useState,useEffect} from 'react';
+
+const VariableContext=React.createContext();
+
+export function VariableProvider(props){
+const [variables,setVariables]=useState({});
+useEffect(()=>{
+    setVariables({
+        nombre:"pruebaTecnologia",
+        apellido:"Verificar funcionamiento"
+    });
+},[]);
+const value=React.useMemo(()=>{
+    return ({
+        variables
+    })
+},[variables]);
+return <VariableContext.Provider value={value} {...props}></VariableContext.Provider>
+}
+
+export function useVariables(){
+    const context=React.useContext(VariableContext);
+    if(!context){
+        throw new Error('useVariables debe estar dentro del proveedor VariableContext');
+    }
+return context;
+}
